@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#00CED1</color>
+    <color name="colorPrimaryDark"> 	#4798B3</color>
+    <color name="colorAccent">#FF4D00</color>
+
+    <color name="Vermilion">#FF1493</color>
+    <color name="PearlPink">#FFB3E6</color>
+    <color name="Azure">#007FFF</color>
+    <color name="Turquoise">#AFEEEE</color>
+    <color name="Violet">#8B00FF</color>
+    <color name="Lilac">#B399FF</color>
+
+</resources>

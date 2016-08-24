@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">日志</string>
+
+    <string name="go_to_work">上班</string>
+    <string name="go_home">下班</string>
+    <string name="statistics">统计结果</string>
+</resources>
