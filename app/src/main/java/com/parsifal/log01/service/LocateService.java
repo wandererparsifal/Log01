@@ -1,4 +1,4 @@
-package com.parsifal.log01;
+package com.parsifal.log01.service;
 
 import android.app.Service;
 import android.content.Intent;

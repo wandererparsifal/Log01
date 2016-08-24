@@ -1,10 +1,13 @@
-package com.parsifal.log01;
+package com.parsifal.log01.ui.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.parsifal.log01.service.LocateService;
+import com.parsifal.log01.R;
 
 public class LocateActivity extends AppCompatActivity {
 
