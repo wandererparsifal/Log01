@@ -39,7 +39,8 @@
 
         <activity
             android:name=".ui.activity.StatisticsActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.ActionBar">
         </activity>
     </application>
 
