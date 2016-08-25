@@ -2,7 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:background="#E680FF"
               android:orientation="vertical">
 
+    <com.parsifal.log01.ui.view.StatisticsSurfaceView
+        android:id="@+id/sv_work"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </LinearLayout>

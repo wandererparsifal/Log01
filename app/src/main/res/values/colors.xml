@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary"> 	#48D1CC</color>
+    <color name="colorPrimary">#48D1CC</color>
     <color name="colorPrimaryDark">#4798B3</color>
     <color name="colorAccent">#FF4D00</color>
 
@@ -11,6 +11,13 @@
     <color name="Violet">#8B00FF</color>
     <color name="Lilac">#B399FF</color>
 
-    <color name="SkyBlue">#00BFFF</color>
-    <color name="Smoke">#F5F5F5</color>
+    <color name="Gainsboro">#DCDCDC</color>
+
+    <color name="PaleTurquoise">#AFEEEE</color>
+    <color name="CornSilk">#FFF8DC</color>
+
+    <color name="Ruby">#CC0080</color>
+    <color name="PeacockBlue">#00808C</color>
+    <color name="PrussianBlue">#003153</color>
+
 </resources>

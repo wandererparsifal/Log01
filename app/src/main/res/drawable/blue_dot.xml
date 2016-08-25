@@ -9,7 +9,7 @@
         android:translateX="0.0"
         android:translateY="0.0">
         <path
-            android:fillColor="@color/SkyBlue"
+            android:fillColor="@color/Azure"
             android:pathData="M0,5.0a5,5.0 0 0,1 10,0a5,5.0 0 0,1 -10,0z"
             />
     </group>
