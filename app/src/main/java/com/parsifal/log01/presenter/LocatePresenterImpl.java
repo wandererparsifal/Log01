@@ -1,8 +1,6 @@
 package com.parsifal.log01.presenter;
 
 import android.content.Context;
-import android.os.Environment;
-import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
@@ -13,7 +11,6 @@ import com.parsifal.log01.utils.FileUtil;
 import com.parsifal.log01.utils.MapBaseUtil;
 import com.parsifal.log01.view.LocateView;
 
-import java.io.File;
 import java.util.Date;
 
 /**
@@ -26,6 +23,8 @@ public class LocatePresenterImpl implements LocatePresenter {
     private MapBaseUtil mMapUtil = null;
 
     private LocateView mLocateView = null;
+
+    private FileUtil mFileUtil = FileUtil.getInstance();
 
     public LocatePresenterImpl(Context context, LocateView locateView) {
         mMapUtil = new MapBaseUtil();
@@ -45,11 +44,8 @@ public class LocatePresenterImpl implements LocatePresenter {
 
     @Override
     public void saveToFile(Date date, AMapLocation aMapLocation) {
-        File sdDir = Environment.getExternalStorageDirectory();
-        String path = sdDir.getAbsolutePath() + "/TEC_WORK_LOG.log";
 
-        FileUtil fileUtil = new FileUtil();
-        String json = fileUtil.load(path);
+        String json = mFileUtil.load();
 
         LatLonPoint latLonPoint = new LatLonPoint(aMapLocation.getLatitude(), aMapLocation.getLongitude());
         TimeAndPlace timeAndPlace = new TimeAndPlace(date, latLonPoint);
@@ -57,7 +53,7 @@ public class LocatePresenterImpl implements LocatePresenter {
             TimeAndPlace[] timeAndPlaces = new TimeAndPlace[1];
             timeAndPlaces[0] = timeAndPlace;
             json = new Gson().toJson(timeAndPlaces, TimeAndPlace[].class);
-            fileUtil.save(path, json);
+            mFileUtil.save(json);
         } else {
             TimeAndPlace[] originalArray = new Gson().fromJson(json, TimeAndPlace[].class);
             int originalLen = originalArray.length;
@@ -67,7 +63,7 @@ public class LocatePresenterImpl implements LocatePresenter {
             }
             newArray[originalArray.length] = timeAndPlace;
             json = new Gson().toJson(newArray, TimeAndPlace[].class);
-            fileUtil.save(path, json);
+            mFileUtil.save(json);
         }
     }
 }

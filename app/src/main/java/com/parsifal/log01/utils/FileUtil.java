@@ -1,5 +1,7 @@
 package com.parsifal.log01.utils;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,9 +17,24 @@ public class FileUtil {
 
     private static final String CHARSET_NAME = "utf-8";
 
-    public void save(String path, String json) {
+    private String mPath = null;
+
+    private FileUtil() {
+        File sdDir = Environment.getExternalStorageDirectory();
+        mPath = sdDir.getAbsolutePath() + "/TEC_WORK_LOG.log";
+    }
+
+    private static class SingletonHolder {
+        private final static FileUtil INSTANCE = new FileUtil();
+    }
+
+    public static FileUtil getInstance() {
+        return SingletonHolder.INSTANCE;
+    }
+
+    public void save(String json) {
         try {
-            File file = new File(path);
+            File file = new File(mPath);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -29,8 +46,8 @@ public class FileUtil {
         }
     }
 
-    public String load(String path) {
-        File file = new File(path);
+    public String load() {
+        File file = new File(mPath);
         if (!file.exists()) {
             return null;
         }
