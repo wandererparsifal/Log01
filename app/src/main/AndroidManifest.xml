@@ -26,7 +26,9 @@
             android:value="3fb05fabd6615eefa890cf3ce0e2ecc6"/>
         <service android:name="com.amap.api.location.APSService"></service>
 
-        <activity android:name=".ui.activity.LocateActivity">
+        <activity
+            android:name=".ui.activity.LocateActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -35,7 +37,9 @@
         </activity>
         <service android:name=".service.LocateService"/>
 
-        <activity android:name=".ui.activity.StatisticsActivity">
+        <activity
+            android:name=".ui.activity.StatisticsActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
