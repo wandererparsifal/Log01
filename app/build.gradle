@@ -24,5 +24,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile files('libs/AMap3DMap_3.3.2_AMapNavi_1.8.0_AMapSearch_3.2.1_AMapLocation_2.4.1_20160524.jar')
+    compile files('libs/commons-math3-3.6.1.jar')
     compile 'com.google.code.gson:gson:2.6.2'
 }
