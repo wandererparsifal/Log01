@@ -3,6 +3,7 @@ package com.parsifal.log01.ui.activity;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
  * Created by YangMing on 2016/8/24 15:16.
  */
 public class StatisticsActivity extends AppCompatActivity implements StatisticsView {
+
+    private Toolbar mToolbar = null;
 
     private ViewPager mViewPager = null;
 
@@ -45,6 +48,8 @@ public class StatisticsActivity extends AppCompatActivity implements StatisticsV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(R.string.go_to_work);
         mStatisticsPresenter = new StatisticsPresenterImpl(this);
         mLayoutDots = (LinearLayout) findViewById(R.id.layout_dots);
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -62,6 +67,11 @@ public class StatisticsActivity extends AppCompatActivity implements StatisticsV
                 Button currentBt = (Button) mLayoutDots.getChildAt(position);
                 currentBt.setBackgroundResource(R.drawable.blue_dot);
                 mPreSelectedBtn = currentBt;
+                if (0 == position) {
+                    mToolbar.setTitle(R.string.go_to_work);
+                } else {
+                    mToolbar.setTitle(R.string.go_home);
+                }
             }
 
             @Override

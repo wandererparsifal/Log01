@@ -8,6 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="AppTheme.ActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
     <style name="ButtonRed" parent="Theme.AppCompat">
         <item name="colorControlHighlight">@color/PearlPink</item>
         <item name="colorButtonNormal">@color/Vermilion</item>
