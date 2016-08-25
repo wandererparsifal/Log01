@@ -14,6 +14,7 @@ import com.parsifal.log01.utils.MathUtil;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -185,6 +186,22 @@ public class StatisticsSurfaceView extends SurfaceView implements
                             if (0 != mBackgroundColor) {
                                 canvas.drawColor(mBackgroundColor);
                             }
+
+                            mPaint.setColor(Ruby);
+                            mPaint.setTextSize(48);
+                            Calendar calendar = Calendar.getInstance();
+                            int ц_int = new BigDecimal(ц).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                            calendar.set(Calendar.HOUR_OF_DAY, ц_int / 60);
+                            calendar.set(Calendar.MINUTE, ц_int % 60);
+                            canvas.drawText("ц = " + mDateFormat.format(calendar.getTime()), 2 * X_AXES_MARGIN, 2 * X_AXES_MARGIN, mPaint);
+
+                            int σ_int = new BigDecimal(σ).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+                            if (0 < σ_int) {
+                                canvas.drawText("σ = " + σ_int + " min", 2 * X_AXES_MARGIN, 3 * X_AXES_MARGIN, mPaint);
+                            } else {
+                                canvas.drawText("σ = " + new BigDecimal(σ * 60).setScale(0, BigDecimal.ROUND_HALF_UP).intValue() + " s", 2 * X_AXES_MARGIN, 3 * X_AXES_MARGIN, mPaint);
+                            }
+
                             float top = mHeight - X_AXES_MARGIN;
                             for (int i = 0; i < nodeCount; i++) {
                                 float x = eW * i + X_AXES_MARGIN;
