@@ -194,18 +194,20 @@ public class StatisticsSurfaceView extends SurfaceView implements
                                 mPaint.setColor(Vermilion);
                                 canvas.drawRect(x - RECT_HALF, top, x + RECT_HALF, bottom, mPaint);
 
-                                mPaint.setColor(Ruby);
-                                mPaint.setTextSize(24);
-                                canvas.drawText(String.valueOf(ys[i]), x - TEXT_X_PROOF1, bottom - TEXT_Y_PROOF1, mPaint);
-
                                 mPaint.setColor(Color.BLACK);
                                 canvas.drawRect(Y_AXES_MARGIN, top + LINE_WIDTH, mWidth, top, mPaint);
 
                                 canvas.drawRect(Y_AXES_MARGIN - LINE_WIDTH, top + LINE_WIDTH, Y_AXES_MARGIN, 0, mPaint);
 
-                                mPaint.setColor(PrussianBlue);
-                                mPaint.setTextSize(12);
-                                canvas.drawText(timeInterval[i], x - TEXT_X_PROOF2, top + TEXT_Y_PROOF2, mPaint);
+                                if (0 != ys[i]) {
+                                    mPaint.setColor(Ruby);
+                                    mPaint.setTextSize(24);
+                                    canvas.drawText(String.valueOf(ys[i]), x - TEXT_X_PROOF1, bottom - TEXT_Y_PROOF1, mPaint);
+
+                                    mPaint.setColor(PrussianBlue);
+                                    mPaint.setTextSize(12);
+                                    canvas.drawText(timeInterval[i], x - TEXT_X_PROOF2, top + TEXT_Y_PROOF2, mPaint);
+                                }
                             }
 
                             for (double i = -X_AXES_MARGIN / eW; i <= span + 2; i += 0.1d) {
