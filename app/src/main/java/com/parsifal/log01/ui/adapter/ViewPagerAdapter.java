@@ -4,6 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.parsifal.log01.ui.fragment.BaseFragment;
+
 import java.util.List;
 
 
@@ -12,9 +14,9 @@ import java.util.List;
  */
 public class ViewPagerAdapter extends FragmentPagerAdapter {
 
-    private List<Fragment> fragments;
+    private List<BaseFragment> fragments;
 
-    public ViewPagerAdapter(FragmentManager fm, List<Fragment> fragments) {
+    public ViewPagerAdapter(FragmentManager fm, List<BaseFragment> fragments) {
         super(fm);
         this.fragments = fragments;
     }

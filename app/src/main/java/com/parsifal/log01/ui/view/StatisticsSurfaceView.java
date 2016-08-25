@@ -38,6 +38,10 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
     private String[] mSamples = null;
 
+    private int mWidth = 0;
+
+    private int mHeight = 0;
+
     private static final int radius = 3;
 
     private float screenX = 0.0f;
@@ -99,8 +103,7 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
     public void setDataSource(String[] src) {
         mSamples = src;
-//        run = true;
-        // TODO: 2016/8/25
+        draw();
     }
 
     public void setBackgroundColor(int color) {
@@ -114,115 +117,124 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, final int width, final int height) {
-        run = true;
-
-        final int samplesCount = mSamples.length;
-        double[] times = new double[samplesCount];
-        Calendar calendar = Calendar.getInstance();
-        for (int i = 0; i < samplesCount; i++) {
-            try {
-                String dateString = mSamples[i];
-                Date date = mDateFormat.parse(dateString);
-                calendar.setTime(date);
-                times[i] = calendar.get(Calendar.HOUR) * 60 + calendar.get(Calendar.MINUTE);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        final double ц = MathUtil.getAverage(times);
-        System.out.println("ц - " + ц);
-        final double σ = MathUtil.getStandardDeviation(times);
-        System.out.println("σ - " + σ);
-
-        final double min = MathUtil.getMin(times);
-        final double max = MathUtil.getMax(times);
-        final double span = max - min;
-
-        final int nodeCount = Double.valueOf(max - min + 1).intValue();
-        System.out.println("nodeCount - " + nodeCount);
-
-        double[] elements = new double[nodeCount];
-        for (int i = 0; i < nodeCount; i++) {
-            elements[i] = min + i;
-        }
-        final int[] ys = MathUtil.occurrences(elements, times);
-
-        final String[] timeInterval = new String[ys.length];
-        for (int i = 0; i < ys.length; i++) {
-            int element = Double.valueOf(elements[i]).intValue();
-            Calendar c = Calendar.getInstance();
-            c.set(Calendar.HOUR_OF_DAY, element / 60);
-            c.set(Calendar.MINUTE, element % 60);
-            timeInterval[i] = mDateFormat.format(c.getTime());
-        }
-
-        final float eW = (width - X_AXES_MARGIN) / (nodeCount);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (run) {
-                    float lastX = 0;
-                    float lastY = 0;
-
-                    try {
-                        Canvas canvas = mHolder.lockCanvas();
-                        if (0 != mBackgroundColor) {
-                            canvas.drawColor(mBackgroundColor);
-                        }
-                        float top = height - X_AXES_MARGIN;
-                        for (int i = 0; i < nodeCount; i++) {
-                            float x = eW * i + X_AXES_MARGIN;
-                            float bottom = height - (ys[i] / Integer.valueOf(samplesCount).floatValue()) * height - X_AXES_MARGIN;
-
-                            mPaint.setColor(Vermilion);
-                            canvas.drawRect(x - RECT_HALF, top, x + RECT_HALF, bottom, mPaint);
-
-                            mPaint.setColor(Ruby);
-                            mPaint.setTextSize(24);
-                            canvas.drawText(String.valueOf(ys[i]), x - TEXT_X_PROOF1, bottom - TEXT_Y_PROOF1, mPaint);
-
-                            mPaint.setColor(Color.BLACK);
-                            canvas.drawRect(Y_AXES_MARGIN, top + LINE_WIDTH, width, top, mPaint);
-
-                            canvas.drawRect(Y_AXES_MARGIN - LINE_WIDTH, top + LINE_WIDTH, Y_AXES_MARGIN, 0, mPaint);
-
-                            mPaint.setColor(PrussianBlue);
-                            mPaint.setTextSize(12);
-                            canvas.drawText(timeInterval[i], x - TEXT_X_PROOF2, top + TEXT_Y_PROOF2, mPaint);
-                        }
-
-                        for (double i = -X_AXES_MARGIN / eW; i <= span + 2; i += 0.1d) {
-                            double x = eW * i + X_AXES_MARGIN;
-                            double z = ((min + i) - ц) / σ;
-                            double y = normalDistribution.density(z);
-
-                            canvas.drawLine(lastX, lastY, (float) x, (float) (height - y * height - X_AXES_MARGIN), mPaint);
-
-                            lastX = (float) x;
-                            lastY = (float) (height - y * height - X_AXES_MARGIN);
-                            mPaint.setColor(PeacockBlue);
-                            canvas.drawRect((float) ((ц - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), height, (float) ((ц - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
-                            canvas.drawRect((float) ((ц - σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), height, (float) ((ц - σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
-                            canvas.drawRect((float) ((ц + σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), height, (float) ((ц + σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
-                        }
-                        mHolder.unlockCanvasAndPost(canvas);
-
-                        if (2 == mDrawCount) {
-                            run = false;
-                            mDrawCount = 0;
-                        }
-                        mDrawCount++;
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+        mWidth = width;
+        mHeight = height;
+        draw();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         run = false;
+    }
+
+    private void draw() {
+        if (null != mSamples & 0 != mWidth & 0 != mHeight) {
+            run = true;
+        }
+        if (run) {
+            final int samplesCount = mSamples.length;
+            double[] times = new double[samplesCount];
+            Calendar calendar = Calendar.getInstance();
+            for (int i = 0; i < samplesCount; i++) {
+                try {
+                    String dateString = mSamples[i];
+                    Date date = mDateFormat.parse(dateString);
+                    calendar.setTime(date);
+                    times[i] = calendar.get(Calendar.HOUR) * 60 + calendar.get(Calendar.MINUTE);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            final double ц = MathUtil.getAverage(times);
+            System.out.println("ц - " + ц);
+            final double σ = MathUtil.getStandardDeviation(times);
+            System.out.println("σ - " + σ);
+
+            final double min = MathUtil.getMin(times);
+            final double max = MathUtil.getMax(times);
+            final double span = max - min;
+
+            final int nodeCount = Double.valueOf(max - min + 1).intValue();
+            System.out.println("nodeCount - " + nodeCount);
+
+            double[] elements = new double[nodeCount];
+            for (int i = 0; i < nodeCount; i++) {
+                elements[i] = min + i;
+            }
+            final int[] ys = MathUtil.occurrences(elements, times);
+
+            final String[] timeInterval = new String[ys.length];
+            for (int i = 0; i < ys.length; i++) {
+                int element = Double.valueOf(elements[i]).intValue();
+                Calendar c = Calendar.getInstance();
+                c.set(Calendar.HOUR_OF_DAY, element / 60);
+                c.set(Calendar.MINUTE, element % 60);
+                timeInterval[i] = mDateFormat.format(c.getTime());
+            }
+
+            final float eW = (mWidth - X_AXES_MARGIN) / (nodeCount);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (run) {
+                        float lastX = 0;
+                        float lastY = 0;
+
+                        try {
+                            Canvas canvas = mHolder.lockCanvas();
+                            if (0 != mBackgroundColor) {
+                                canvas.drawColor(mBackgroundColor);
+                            }
+                            float top = mHeight - X_AXES_MARGIN;
+                            for (int i = 0; i < nodeCount; i++) {
+                                float x = eW * i + X_AXES_MARGIN;
+                                float bottom = mHeight - (ys[i] / Integer.valueOf(samplesCount).floatValue()) * mHeight - X_AXES_MARGIN;
+
+                                mPaint.setColor(Vermilion);
+                                canvas.drawRect(x - RECT_HALF, top, x + RECT_HALF, bottom, mPaint);
+
+                                mPaint.setColor(Ruby);
+                                mPaint.setTextSize(24);
+                                canvas.drawText(String.valueOf(ys[i]), x - TEXT_X_PROOF1, bottom - TEXT_Y_PROOF1, mPaint);
+
+                                mPaint.setColor(Color.BLACK);
+                                canvas.drawRect(Y_AXES_MARGIN, top + LINE_WIDTH, mWidth, top, mPaint);
+
+                                canvas.drawRect(Y_AXES_MARGIN - LINE_WIDTH, top + LINE_WIDTH, Y_AXES_MARGIN, 0, mPaint);
+
+                                mPaint.setColor(PrussianBlue);
+                                mPaint.setTextSize(12);
+                                canvas.drawText(timeInterval[i], x - TEXT_X_PROOF2, top + TEXT_Y_PROOF2, mPaint);
+                            }
+
+                            for (double i = -X_AXES_MARGIN / eW; i <= span + 2; i += 0.1d) {
+                                double x = eW * i + X_AXES_MARGIN;
+                                double z = ((min + i) - ц) / σ;
+                                double y = normalDistribution.density(z);
+
+                                canvas.drawLine(lastX, lastY, (float) x, (float) (mHeight - y * mHeight - X_AXES_MARGIN), mPaint);
+
+                                lastX = (float) x;
+                                lastY = (float) (mHeight - y * mHeight - X_AXES_MARGIN);
+                                mPaint.setColor(PeacockBlue);
+                                canvas.drawRect((float) ((ц - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                                canvas.drawRect((float) ((ц - σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                                canvas.drawRect((float) ((ц + σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц + σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                            }
+                            mHolder.unlockCanvasAndPost(canvas);
+
+                            if (2 == mDrawCount) {
+                                run = false;
+                                mDrawCount = 0;
+                            }
+                            mDrawCount++;
+                        } catch (NullPointerException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }).start();
+        }
     }
 }
