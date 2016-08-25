@@ -152,7 +152,6 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
             final double min = MathUtil.getMin(times);
             final double max = MathUtil.getMax(times);
-            final double span = max - min;
 
             final int nodeCount = Double.valueOf(max - min + 1).intValue();
             System.out.println("nodeCount - " + nodeCount);
@@ -210,20 +209,24 @@ public class StatisticsSurfaceView extends SurfaceView implements
                                 }
                             }
 
-                            for (double i = -X_AXES_MARGIN / eW; i <= span + 2; i += 0.1d) {
-                                double x = eW * i + X_AXES_MARGIN;
+                            double i = -X_AXES_MARGIN / eW;
+                            double increment = (nodeCount + X_AXES_MARGIN / eW) / 32.0d;
+                            double x = 0.0d;
+                            while (x <= mWidth) {
+                                x = eW * i + X_AXES_MARGIN;
                                 double z = ((min + i) - ц) / σ;
                                 double y = normalDistribution.density(z);
 
                                 canvas.drawLine(lastX, lastY, (float) x, (float) (mHeight - y * mHeight - X_AXES_MARGIN), mPaint);
-
                                 lastX = (float) x;
                                 lastY = (float) (mHeight - y * mHeight - X_AXES_MARGIN);
                                 mPaint.setColor(PeacockBlue);
                                 canvas.drawRect((float) ((ц - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
                                 canvas.drawRect((float) ((ц - σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
                                 canvas.drawRect((float) ((ц + σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц + σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                                i += increment;
                             }
+
                             mHolder.unlockCanvasAndPost(canvas);
 
                             if (2 == mDrawCount) {
