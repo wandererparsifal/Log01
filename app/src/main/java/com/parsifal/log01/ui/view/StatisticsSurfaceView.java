@@ -141,7 +141,7 @@ public class StatisticsSurfaceView extends SurfaceView implements
                     String dateString = mSamples[i];
                     Date date = mDateFormat.parse(dateString);
                     calendar.setTime(date);
-                    times[i] = calendar.get(Calendar.HOUR) * 60 + calendar.get(Calendar.MINUTE);
+                    times[i] = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
