@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="12dp"
-    tools:context=".ui.activity.LocateActivity">
+    tools:context=".ui.activity.MainActivity">
 
     <Button
         android:id="@+id/button_work"
