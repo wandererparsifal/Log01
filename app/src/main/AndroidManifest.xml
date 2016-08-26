@@ -27,7 +27,7 @@
         <service android:name="com.amap.api.location.APSService"></service>
 
         <activity
-            android:name=".ui.activity.LocateActivity"
+            android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
