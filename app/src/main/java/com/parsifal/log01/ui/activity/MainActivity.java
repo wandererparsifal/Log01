@@ -9,7 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
@@ -19,6 +22,8 @@ import com.parsifal.log01.R;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private Toolbar mToolbar = null;
 
     private Button mBtnWork = null;
 
@@ -42,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setTitle(R.string.app_name);
         mBtnWork = (Button) findViewById(R.id.button_work);
         mBtnHome = (Button) findViewById(R.id.button_home);
         mBtnStatistics = (Button) findViewById(R.id.button_statistics);
@@ -64,6 +72,14 @@ public class MainActivity extends AppCompatActivity {
         mBtnWork.setOnClickListener(mLocationOnClickListener);
         mBtnHome.setOnClickListener(mLocationOnClickListener);
         mBtnStatistics.setOnClickListener(mActivityOnClickListener);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_switch, menu);
+        MenuItem item = menu.findItem(R.id.switch_menu);
+        item.setActionView(R.layout.layout_switch);
+        return true;
     }
 
     @Override
