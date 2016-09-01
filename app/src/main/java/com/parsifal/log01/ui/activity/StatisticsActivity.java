@@ -15,6 +15,7 @@ import com.parsifal.log01.ui.fragment.BaseFragment;
 import com.parsifal.log01.ui.fragment.FragmentHome;
 import com.parsifal.log01.ui.fragment.FragmentWork;
 import com.parsifal.log01.ui.fragment.OnFragmentLoadListener;
+import com.parsifal.log01.ui.view.StatisticsData;
 import com.parsifal.log01.view.StatisticsView;
 
 import java.util.ArrayList;
@@ -109,7 +110,7 @@ public class StatisticsActivity extends AppCompatActivity implements StatisticsV
                 public void onCreateViewComplete() {
                     mCompleteCount++;
                     if (mCompleteCount == mFragmentsCount) {
-                        mLogPresenter.loadFromFile();
+                        mLogPresenter.loadFromSP();
                     }
                 }
             });
@@ -117,8 +118,8 @@ public class StatisticsActivity extends AppCompatActivity implements StatisticsV
     }
 
     @Override
-    public void drawGraphics(String[] samples1, String[] samples2) {
-        mFragments.get(0).setDataSource(samples1);
-        mFragments.get(1).setDataSource(samples2);
+    public void drawGraphics(StatisticsData data1, StatisticsData data2) {
+        mFragments.get(0).setDataSource(data1);
+        mFragments.get(1).setDataSource(data2);
     }
 }

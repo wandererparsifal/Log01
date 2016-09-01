@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.parsifal.log01.R;
+import com.parsifal.log01.ui.view.StatisticsData;
 import com.parsifal.log01.ui.view.StatisticsSurfaceView;
 
 /**
@@ -44,8 +45,8 @@ public class FragmentWork extends BaseFragment {
     }
 
     @Override
-    public void setDataSource(String[] src) {
-        super.setDataSource(src);
-        mSSView.setDataSource(src);
+    public void setDataSource(StatisticsData data) {
+        super.setDataSource(data);
+        mSSView.setDataSource(data);
     }
 }

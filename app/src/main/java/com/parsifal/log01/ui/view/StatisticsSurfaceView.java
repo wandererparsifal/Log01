@@ -15,10 +15,8 @@ import com.parsifal.log01.utils.MathUtil;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -37,7 +35,7 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
     private int mDrawCount = 0;
 
-    private String[] mSamples = null;
+    private StatisticsData mData = null;
 
     private int mWidth = 0;
 
@@ -102,8 +100,8 @@ public class StatisticsSurfaceView extends SurfaceView implements
         mPaint.setAntiAlias(true);
     }
 
-    public void setDataSource(String[] src) {
-        mSamples = src;
+    public void setDataSource(StatisticsData data) {
+        mData = data;
         draw();
     }
 
@@ -129,30 +127,16 @@ public class StatisticsSurfaceView extends SurfaceView implements
     }
 
     private void draw() {
-        if (null != mSamples & 0 != mWidth & 0 != mHeight) {
+        if (null != mData & 0 != mWidth & 0 != mHeight) {
             run = true;
         }
         if (run) {
-            final int samplesCount = mSamples.length;
-            double[] times = new double[samplesCount];
-            Calendar calendar = Calendar.getInstance();
-            for (int i = 0; i < samplesCount; i++) {
-                try {
-                    String dateString = mSamples[i];
-                    Date date = mDateFormat.parse(dateString);
-                    calendar.setTime(date);
-                    times[i] = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            final double ц = MathUtil.getAverage(times);
-            System.out.println("ц - " + ц);
-            final double σ = MathUtil.getStandardDeviation(times);
-            System.out.println("σ - " + σ);
-
-            final double min = MathUtil.getMin(times);
-            final double max = MathUtil.getMax(times);
+            final double ц = mData.ц;
+            final double σ = mData.σ;
+            final double min = mData.min;
+            final double max = mData.max;
+            double[] times = mData.times;
+            final int samplesCount = times.length;
 
             final int nodeCount = Double.valueOf(max - min + 1).intValue();
             System.out.println("nodeCount - " + nodeCount);
@@ -161,10 +145,10 @@ public class StatisticsSurfaceView extends SurfaceView implements
             for (int i = 0; i < nodeCount; i++) {
                 elements[i] = min + i;
             }
-            final int[] ys = MathUtil.occurrences(elements, times);
+            final int[] countArray = MathUtil.occurrences(elements, times);
 
-            final String[] timeInterval = new String[ys.length];
-            for (int i = 0; i < ys.length; i++) {
+            final String[] timeInterval = new String[countArray.length];
+            for (int i = 0; i < countArray.length; i++) {
                 int element = Double.valueOf(elements[i]).intValue();
                 Calendar c = Calendar.getInstance();
                 c.set(Calendar.HOUR_OF_DAY, element / 60);
@@ -172,7 +156,7 @@ public class StatisticsSurfaceView extends SurfaceView implements
                 timeInterval[i] = mDateFormat.format(c.getTime());
             }
 
-            final float eW = (mWidth - X_AXES_MARGIN) / (nodeCount);
+            final float eachW = (mWidth - X_AXES_MARGIN) / (nodeCount);
 
             new Thread(new Runnable() {
                 @Override
@@ -204,8 +188,8 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
                             float top = mHeight - X_AXES_MARGIN;
                             for (int i = 0; i < nodeCount; i++) {
-                                float x = eW * i + X_AXES_MARGIN;
-                                float bottom = mHeight - (ys[i] / Integer.valueOf(samplesCount).floatValue()) * mHeight - X_AXES_MARGIN;
+                                float x = eachW * i + X_AXES_MARGIN;
+                                float bottom = mHeight - (countArray[i] / Integer.valueOf(samplesCount).floatValue()) * mHeight - X_AXES_MARGIN;
 
                                 mPaint.setColor(Vermilion);
                                 canvas.drawRect(x - RECT_HALF, top, x + RECT_HALF, bottom, mPaint);
@@ -215,10 +199,10 @@ public class StatisticsSurfaceView extends SurfaceView implements
 
                                 canvas.drawRect(Y_AXES_MARGIN - LINE_WIDTH, top + LINE_WIDTH, Y_AXES_MARGIN, 0, mPaint);
 
-                                if (0 != ys[i]) {
+                                if (0 != countArray[i]) {
                                     mPaint.setColor(Ruby);
                                     mPaint.setTextSize(24);
-                                    canvas.drawText(String.valueOf(ys[i]), x - TEXT_X_PROOF1, bottom - TEXT_Y_PROOF1, mPaint);
+                                    canvas.drawText(String.valueOf(countArray[i]), x - TEXT_X_PROOF1, bottom - TEXT_Y_PROOF1, mPaint);
 
                                     mPaint.setColor(PrussianBlue);
                                     mPaint.setTextSize(12);
@@ -226,11 +210,11 @@ public class StatisticsSurfaceView extends SurfaceView implements
                                 }
                             }
 
-                            double i = -X_AXES_MARGIN / eW;
-                            double increment = (nodeCount + X_AXES_MARGIN / eW) / 32.0d;
+                            double i = -X_AXES_MARGIN / eachW;
+                            double increment = (nodeCount + X_AXES_MARGIN / eachW) / 32.0d;
                             double x = 0.0d;
                             while (x <= mWidth) {
-                                x = eW * i + X_AXES_MARGIN;
+                                x = eachW * i + X_AXES_MARGIN;
                                 double z = ((min + i) - ц) / σ;
                                 double y = normalDistribution.density(z);
 
@@ -238,9 +222,9 @@ public class StatisticsSurfaceView extends SurfaceView implements
                                 lastX = (float) x;
                                 lastY = (float) (mHeight - y * mHeight - X_AXES_MARGIN);
                                 mPaint.setColor(PeacockBlue);
-                                canvas.drawRect((float) ((ц - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
-                                canvas.drawRect((float) ((ц - σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
-                                canvas.drawRect((float) ((ц + σ - min) * eW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц + σ - min) * eW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                                canvas.drawRect((float) ((ц - min) * eachW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - min) * eachW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                                canvas.drawRect((float) ((ц - σ - min) * eachW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц - σ - min) * eachW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
+                                canvas.drawRect((float) ((ц + σ - min) * eachW - LINE_WIDTH_HALF + X_AXES_MARGIN), mHeight, (float) ((ц + σ - min) * eachW + LINE_WIDTH_HALF + X_AXES_MARGIN), 0, mPaint);
                                 i += increment;
                             }
 
