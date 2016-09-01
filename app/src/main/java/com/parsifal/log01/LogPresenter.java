@@ -4,6 +4,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.parsifal.log01.view.BaseView;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -21,7 +22,7 @@ public interface LogPresenter {
 
     void loadFromSP();
 
-    void setAlarm();
+    void setAlarm(Calendar calendar);
 
     void cancelAlarm();
 }

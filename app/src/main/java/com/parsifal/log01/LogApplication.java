@@ -159,13 +159,44 @@ public class LogApplication extends Application implements LogPresenter {
             samples2 = new String[list_home.size()];
             samples2 = list_home.toArray(samples2);
         }
+        int time1 = 0;
         StatisticsData data1 = getStatisticsData(samples1);
         if (null != data1) {
+            time1 = (int) data1.ц;
             mSPUtil.save(KEY_WORK, new Gson().toJson(data1, StatisticsData.class));
         }
+        int time2 = 0;
         StatisticsData data2 = getStatisticsData(samples2);
         if (null != data2) {
+            time2 = (int) data2.ц;
             mSPUtil.save(KEY_HOME, new Gson().toJson(data2, StatisticsData.class));
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int timeNow = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+        LogUtil.i(TAG, "time " + timeNow);
+        if (timeNow < time1) {
+            calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
+            calendar.set(Calendar.MINUTE, time1 % 60);
+            setAlarm(calendar);
+        } else if (timeNow < time2) {
+            calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
+            calendar.set(Calendar.MINUTE, time2 % 60);
+            setAlarm(calendar);
+        } else {
+            if (0 != time1) {
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
+                calendar.set(Calendar.MINUTE, time1 % 60);
+                setAlarm(calendar);
+            } else {
+                if (0 != time2) {
+                    calendar.add(Calendar.DAY_OF_MONTH, 1);
+                    calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
+                    calendar.set(Calendar.MINUTE, time2 % 60);
+                    setAlarm(calendar);
+                }
+            }
         }
     }
 
@@ -220,11 +251,9 @@ public class LogApplication extends Application implements LogPresenter {
     }
 
     @Override
-    public void setAlarm() {
+    public void setAlarm(Calendar calendar) {
         LogUtil.i(TAG, "setAlarm");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.SECOND, 5);
+        LogUtil.i(TAG, "calendar " + new Gson().toJson(calendar, Calendar.class));
 
         Intent intent = new Intent(this, NotificationReceiver.class);
         PendingIntent contentIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
