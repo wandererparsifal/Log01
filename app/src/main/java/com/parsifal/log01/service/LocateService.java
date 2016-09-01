@@ -8,20 +8,18 @@ import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
-import com.parsifal.log01.presenter.LocatePresenter;
-import com.parsifal.log01.presenter.LocatePresenterImpl;
-import com.parsifal.log01.view.LocateView;
+import com.parsifal.log01.LogPresenter;
 
 import java.util.Date;
 
 /**
  * Created by YangMing on 2016/8/24 15:45.
  */
-public class LocateService extends Service implements LocateView {
+public class LocateService extends Service {
 
     private static final String TAG = LocateService.class.getSimpleName();
 
-    private LocatePresenter mLocatePresenter = null;
+    private LogPresenter mLogPresenter = null;
 
     @Nullable
     @Override
@@ -38,11 +36,11 @@ public class LocateService extends Service implements LocateView {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand");
-        mLocatePresenter = new LocatePresenterImpl(this, this);
-        mLocatePresenter.locate(new AMapLocationListener() {
+        mLogPresenter = (LogPresenter) getApplication();
+        mLogPresenter.locate(new AMapLocationListener() {
             @Override
             public void onLocationChanged(AMapLocation aMapLocation) {
-                mLocatePresenter.saveToFile(new Date(), aMapLocation);
+                mLogPresenter.saveToFile(new Date(), aMapLocation);
                 stopSelf();
             }
         });
@@ -52,6 +50,5 @@ public class LocateService extends Service implements LocateView {
     @Override
     public void onDestroy() {
         Log.i(TAG, "onDestroy");
-        mLocatePresenter.release();
     }
 }

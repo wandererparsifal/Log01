@@ -3,6 +3,6 @@ package com.parsifal.log01.view;
 /**
  * Created by YangMing on 2016/8/24 15:59.
  */
-public interface StatisticsView {
+public interface StatisticsView extends BaseView {
     void drawGraphics(String[] samples1, String[] samples2);
 }
