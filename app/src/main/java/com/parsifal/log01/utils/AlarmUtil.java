@@ -13,7 +13,9 @@ public class AlarmUtil {
 
     private static final String TAG = AlarmUtil.class.getSimpleName();
 
-    private AlarmManager alarmManager = null;
+    private AlarmManager mAlarmManager = null;
+
+    private PendingIntent mOperation = null;
 
     private boolean isInitialized = false;
 
@@ -29,11 +31,24 @@ public class AlarmUtil {
     }
 
     public void init(Context context) {
-        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        mAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         isInitialized = true;
     }
 
     public void setAlarm(Calendar calendar, PendingIntent pendingIntent) {
-        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        if (isInitialized) {
+            mOperation = pendingIntent;
+            mAlarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+        } else {
+            LogUtil.w(TAG, "AlarmUtil is uninitialized.");
+        }
+    }
+
+    public void cancel() {
+        if (isInitialized) {
+            mAlarmManager.cancel(mOperation);
+        } else {
+            LogUtil.w(TAG, "AlarmUtil is uninitialized.");
+        }
     }
 }

@@ -4,4 +4,6 @@
     <string name="go_to_work">上班</string>
     <string name="go_home">下班</string>
     <string name="statistics">统计结果</string>
+
+    <string name="remind">你需要打卡记录上下班时间，别忘了</string>
 </resources>

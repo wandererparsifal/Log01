@@ -44,6 +44,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.ActionBar">
         </activity>
+
+        <receiver android:name=".broadcastreceiver.NotificationReceiver">
+            <intent-filter>
+                <action android:name="com.parsifal.log01.notificationreceiver"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

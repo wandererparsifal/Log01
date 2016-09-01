@@ -20,4 +20,8 @@ public interface LogPresenter {
     void saveToFile(Date date, AMapLocation aMapLocation);
 
     void loadFromFile();
+
+    void setAlarm();
+
+    void cancelAlarm();
 }

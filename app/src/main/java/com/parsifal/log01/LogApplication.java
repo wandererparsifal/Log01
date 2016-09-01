@@ -1,6 +1,8 @@
 package com.parsifal.log01;
 
 import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
@@ -8,7 +10,10 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.services.core.LatLonPoint;
 import com.google.gson.Gson;
 import com.parsifal.log01.bean.TimeAndPlace;
+import com.parsifal.log01.broadcastreceiver.NotificationReceiver;
+import com.parsifal.log01.utils.AlarmUtil;
 import com.parsifal.log01.utils.FileUtil;
+import com.parsifal.log01.utils.LogUtil;
 import com.parsifal.log01.utils.MapBaseUtil;
 import com.parsifal.log01.view.BaseView;
 import com.parsifal.log01.view.StatisticsView;
@@ -30,7 +35,9 @@ public class LogApplication extends Application implements LogPresenter {
 
     private MapBaseUtil mMapUtil = null;
 
-    private FileUtil mFileUtil = FileUtil.getInstance();
+    private FileUtil mFileUtil = null;
+
+    private AlarmUtil mAlarmUtil = null;
 
     private SimpleDateFormat mDateFormat = null;
 
@@ -41,6 +48,9 @@ public class LogApplication extends Application implements LogPresenter {
         super.onCreate();
         mMapUtil = new MapBaseUtil();
         mMapUtil.init(this);
+        mFileUtil = FileUtil.getInstance();
+        mAlarmUtil = AlarmUtil.getInstance();
+        mAlarmUtil.init(this);
         mDateFormat = new SimpleDateFormat(PATTERN, Locale.getDefault());
     }
 
@@ -145,5 +155,24 @@ public class LogApplication extends Application implements LogPresenter {
                 ((StatisticsView) mView).drawGraphics(samples1, samples2);
             }
         }
+    }
+
+    @Override
+    public void setAlarm() {
+        LogUtil.i(TAG, "setAlarm");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.SECOND, 5);
+
+        Intent intent = new Intent(this, NotificationReceiver.class);
+        PendingIntent contentIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        mAlarmUtil.setAlarm(calendar, contentIntent);
+    }
+
+    @Override
+    public void cancelAlarm() {
+        LogUtil.i(TAG, "cancelAlarm");
+        mAlarmUtil.cancel();
     }
 }

@@ -18,12 +18,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
+import com.parsifal.log01.LogPresenter;
 import com.parsifal.log01.service.LocateService;
 import com.parsifal.log01.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private LogPresenter mLogPresenter = null;
 
     private Toolbar mToolbar = null;
 
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLogPresenter = (LogPresenter) getApplication();
         if (23 <= Build.VERSION.SDK_INT) {
             verifyStoragePermissions(this);
         } else {
@@ -88,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i(TAG, "onCheckedChanged " + isChecked);
+                if (isChecked) {
+                    mLogPresenter.setAlarm();
+                } else {
+                    mLogPresenter.cancelAlarm();
+                }
             }
         });
         return true;
