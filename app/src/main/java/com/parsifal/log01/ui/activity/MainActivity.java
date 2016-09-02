@@ -18,15 +18,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 
-import com.google.gson.Gson;
 import com.parsifal.log01.LogApplication;
 import com.parsifal.log01.service.LocateService;
 import com.parsifal.log01.R;
-import com.parsifal.log01.ui.view.StatisticsData;
-import com.parsifal.log01.utils.SharedPreferencesUtil;
-
-import java.util.Calendar;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -99,51 +93,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i(TAG, "onCheckedChanged " + isChecked);
                 if (isChecked) {
-                    String json1 = SharedPreferencesUtil.getInstance().load("data_work");
-                    String json2 = SharedPreferencesUtil.getInstance().load("data_home");
-                    StatisticsData data1 = null;
-                    StatisticsData data2 = null;
-                    int time1 = 0;
-                    int time2 = 0;
-                    if (null != json1) {
-                        data1 = new Gson().fromJson(json1, StatisticsData.class);
-                        time1 = (int) data1.ц;
-                    }
-                    if (null != json2) {
-                        data2 = new Gson().fromJson(json2, StatisticsData.class);
-                        time2 = (int) data2.ц;
-                    }
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(new Date());
-                    int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                    if (12 > hour) {
-                        if (0 != time2) {
-                            calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
-                            calendar.set(Calendar.MINUTE, time2 % 60);
-                            mApplication.setAlarm(calendar);
-                        } else {
-                            if (0 != time1) {
-                                calendar.add(Calendar.DAY_OF_MONTH, 1);
-                                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
-                                calendar.set(Calendar.MINUTE, time1 % 60);
-                                mApplication.setAlarm(calendar);
-                            }
-                        }
-                    } else {
-                        if (0 != time1) {
-                            calendar.add(Calendar.DAY_OF_MONTH, 1);
-                            calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
-                            calendar.set(Calendar.MINUTE, time1 % 60);
-                            mApplication.setAlarm(calendar);
-                        } else {
-                            if (0 != time2) {
-                                calendar.add(Calendar.DAY_OF_MONTH, 1);
-                                calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
-                                calendar.set(Calendar.MINUTE, time2 % 60);
-                                mApplication.setAlarm(calendar);
-                            }
-                        }
-                    }
+                    mApplication.setAlarm();
                 } else {
                     mApplication.cancelAlarm();
                 }

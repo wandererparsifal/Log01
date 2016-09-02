@@ -7,12 +7,12 @@ import android.content.Intent;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.services.core.LatLonPoint;
-import com.google.gson.Gson;
 import com.parsifal.log01.bean.TimeAndPlace;
 import com.parsifal.log01.broadcastreceiver.NotificationReceiver;
 import com.parsifal.log01.ui.view.StatisticsData;
 import com.parsifal.log01.utils.AlarmUtil;
 import com.parsifal.log01.utils.FileUtil;
+import com.parsifal.log01.utils.JsonUtil;
 import com.parsifal.log01.utils.LogUtil;
 import com.parsifal.log01.utils.MapBaseUtil;
 import com.parsifal.log01.utils.MathUtil;
@@ -36,6 +36,8 @@ public class LogApplication extends Application {
 
     private BaseView mView = null;
 
+    private JsonUtil mJsonUtil = null;
+
     private MapBaseUtil mMapUtil = null;
 
     private FileUtil mFileUtil = null;
@@ -55,6 +57,7 @@ public class LogApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        mJsonUtil = JsonUtil.getInstance();
         mMapUtil = new MapBaseUtil();
         mMapUtil.init(this);
         mFileUtil = FileUtil.getInstance();
@@ -87,10 +90,10 @@ public class LogApplication extends Application {
             TimeAndPlace[] timeAndPlaces = new TimeAndPlace[1];
             timeAndPlaces[0] = timeAndPlace;
             saveToSP(timeAndPlaces);
-            json = new Gson().toJson(timeAndPlaces, TimeAndPlace[].class);
+            json = mJsonUtil.toJson(timeAndPlaces, TimeAndPlace[].class);
             mFileUtil.save(json);
         } else {
-            TimeAndPlace[] originalArray = new Gson().fromJson(json, TimeAndPlace[].class);
+            TimeAndPlace[] originalArray = mJsonUtil.fromJson(json, TimeAndPlace[].class);
             int originalLen = originalArray.length;
             TimeAndPlace[] newArray = new TimeAndPlace[originalLen + 1];
             for (int i = 0; i < originalLen; i++) {
@@ -98,7 +101,7 @@ public class LogApplication extends Application {
             }
             newArray[originalArray.length] = timeAndPlace;
             saveToSP(newArray);
-            json = new Gson().toJson(newArray, TimeAndPlace[].class);
+            json = mJsonUtil.toJson(newArray, TimeAndPlace[].class);
             mFileUtil.save(json);
         }
     }
@@ -155,45 +158,16 @@ public class LogApplication extends Application {
             samples2 = new String[list_home.size()];
             samples2 = list_home.toArray(samples2);
         }
-        int time1 = 0;
         StatisticsData data1 = getStatisticsData(samples1);
         if (null != data1) {
-            time1 = (int) data1.ц;
-            mSPUtil.save(KEY_WORK, new Gson().toJson(data1, StatisticsData.class));
+            mSPUtil.save(KEY_WORK, mJsonUtil.toJson(data1, StatisticsData.class));
         }
-        int time2 = 0;
         StatisticsData data2 = getStatisticsData(samples2);
         if (null != data2) {
-            time2 = (int) data2.ц;
-            mSPUtil.save(KEY_HOME, new Gson().toJson(data2, StatisticsData.class));
+            mSPUtil.save(KEY_HOME, mJsonUtil.toJson(data2, StatisticsData.class));
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int timeNow = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
-        LogUtil.i(TAG, "time " + timeNow);
-        if (timeNow < time1) {
-            calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
-            calendar.set(Calendar.MINUTE, time1 % 60);
-            setAlarm(calendar);
-        } else if (timeNow < time2) {
-            calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
-            calendar.set(Calendar.MINUTE, time2 % 60);
-            setAlarm(calendar);
-        } else {
-            if (0 != time1) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
-                calendar.set(Calendar.MINUTE, time1 % 60);
-                setAlarm(calendar);
-            } else {
-                if (0 != time2) {
-                    calendar.add(Calendar.DAY_OF_MONTH, 1);
-                    calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
-                    calendar.set(Calendar.MINUTE, time2 % 60);
-                    setAlarm(calendar);
-                }
-            }
-        }
+
+        setAlarm();
     }
 
     private StatisticsData getStatisticsData(String[] samples) {
@@ -235,24 +209,99 @@ public class LogApplication extends Application {
         StatisticsData data1 = null;
         StatisticsData data2 = null;
         if (null != json1) {
-            data1 = new Gson().fromJson(json1, StatisticsData.class);
+            data1 = mJsonUtil.fromJson(json1, StatisticsData.class);
         }
         if (null != json2) {
-            data2 = new Gson().fromJson(json2, StatisticsData.class);
+            data2 = mJsonUtil.fromJson(json2, StatisticsData.class);
         }
         if (mView instanceof StatisticsView) {
             ((StatisticsView) mView).drawGraphics(data1, data2);
         }
     }
 
-    public void setAlarm(Calendar calendar) {
+    public boolean setAlarm() {
         LogUtil.i(TAG, "setAlarm");
-        LogUtil.i(TAG, "calendar " + new Gson().toJson(calendar, Calendar.class));
 
-        Intent intent = new Intent(this, NotificationReceiver.class);
-        PendingIntent contentIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        String json1 = mSPUtil.load(KEY_WORK);
+        String json2 = mSPUtil.load(KEY_HOME);
+        int time1 = 0;
+        int time2 = 0;
+        if (null != json1) {
+            StatisticsData data1 = mJsonUtil.fromJson(json1, StatisticsData.class);
+            time1 = (int) data1.ц;
+        }
+        if (null != json2) {
+            StatisticsData data2 = mJsonUtil.fromJson(json2, StatisticsData.class);
+            time2 = (int) data2.ц;
+        }
 
-        mAlarmUtil.setAlarm(calendar, contentIntent);
+        boolean valid = true;
+        Calendar calendar = Calendar.getInstance();
+        int timeNow = calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE);
+        if (0 != time1 && 0 != time2) {
+            if (timeNow < time1) { // This Morning
+                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
+                calendar.set(Calendar.MINUTE, time1 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm This Morning, alarmTime is " + alarmTime);
+            } else if (timeNow < time2) { // This Afternoon
+                calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
+                calendar.set(Calendar.MINUTE, time2 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm This Afternoon, alarmTime is " + alarmTime);
+            } else { // Next Morning
+                getNextWorkDay(calendar);
+                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
+                calendar.set(Calendar.MINUTE, time1 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm Next Morning, alarmTime is " + alarmTime);
+            }
+        } else if (0 != time1 && 0 == time2) {
+            if (timeNow < time1) { // This Morning
+                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
+                calendar.set(Calendar.MINUTE, time1 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm This Morning, alarmTime is " + alarmTime);
+            } else { // Next Morning
+                getNextWorkDay(calendar);
+                calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
+                calendar.set(Calendar.MINUTE, time1 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm Next Morning, alarmTime is " + alarmTime);
+            }
+        } else if (0 == time1 && 0 != time2) {
+            if (timeNow < time2) { // This Afternoon
+                calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
+                calendar.set(Calendar.MINUTE, time2 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm This Afternoon, alarmTime is " + alarmTime);
+            } else { // Next Afternoon
+                getNextWorkDay(calendar);
+                calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
+                calendar.set(Calendar.MINUTE, time2 % 60);
+                String alarmTime = mJsonUtil.toJson(calendar, Calendar.class);
+                LogUtil.i(TAG, "setAlarm Next Afternoon, alarmTime is " + alarmTime);
+            }
+        } else {
+            valid = false;
+            LogUtil.i(TAG, "Time is not valid. Do nothing.");
+        }
+
+        if (valid) {
+            Intent intent = new Intent(this, NotificationReceiver.class);
+            PendingIntent contentIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            mAlarmUtil.setAlarm(calendar, contentIntent);
+        }
+        return valid;
+    }
+
+    private Calendar getNextWorkDay(Calendar calendar) {
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+        if (Calendar.SUNDAY == calendar.get(Calendar.DAY_OF_WEEK) ||
+                Calendar.SATURDAY == calendar.get(Calendar.DAY_OF_WEEK)) {
+            return getNextWorkDay(calendar);
+        }
+        return calendar;
     }
 
     public void cancelAlarm() {
