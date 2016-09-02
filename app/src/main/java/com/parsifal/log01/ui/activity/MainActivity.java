@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +20,7 @@ import android.widget.CompoundButton;
 import com.parsifal.log01.LogApplication;
 import com.parsifal.log01.service.LocateService;
 import com.parsifal.log01.R;
+import com.parsifal.log01.utils.LogUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.i(TAG, "onCheckedChanged " + isChecked);
+                LogUtil.i(TAG, "onCheckedChanged " + isChecked);
                 if (isChecked) {
                     mApplication.setAlarmOn();
                     mApplication.setAlarm();
@@ -128,21 +128,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.i(TAG, "onRequestPermissionsResult");
+        LogUtil.i(TAG, "onRequestPermissionsResult");
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         allGranted = true;
         for (int i = 0; i < permissions.length; i++) {
             if (PackageManager.PERMISSION_GRANTED != grantResults[i]) {
                 allGranted = false;
-                Log.e(TAG, "Permission is Denied " + permissions[i]);
+                LogUtil.e(TAG, "Permission is Denied " + permissions[i]);
             }
         }
         if (allGranted) {
-            Log.i(TAG, "Permission ok.");
+            LogUtil.i(TAG, "Permission ok.");
             mBtnWork.setEnabled(true);
             mBtnHome.setEnabled(true);
         } else {
-            Log.w(TAG, "allGranted " + allGranted);
+            LogUtil.w(TAG, "allGranted " + allGranted);
             mBtnWork.setEnabled(false);
             mBtnHome.setEnabled(false);
         }

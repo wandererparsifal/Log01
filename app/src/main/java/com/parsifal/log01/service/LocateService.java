@@ -4,11 +4,11 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.parsifal.log01.LogApplication;
+import com.parsifal.log01.utils.LogUtil;
 
 import java.util.Date;
 
@@ -29,13 +29,13 @@ public class LocateService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "onCreate");
+        LogUtil.i(TAG, "LocateService onCreate");
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand");
+        LogUtil.i(TAG, "LocateService onStartCommand");
         mApplication = (LogApplication) getApplication();
         mApplication.locate(new AMapLocationListener() {
             @Override
@@ -49,6 +49,6 @@ public class LocateService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy");
+        LogUtil.i(TAG, "LocateService onDestroy");
     }
 }

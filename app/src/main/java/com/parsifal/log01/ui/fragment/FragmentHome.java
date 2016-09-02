@@ -3,7 +3,6 @@ package com.parsifal.log01.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,7 @@ import android.view.ViewGroup;
 import com.parsifal.log01.R;
 import com.parsifal.log01.ui.view.StatisticsData;
 import com.parsifal.log01.ui.view.StatisticsSurfaceView;
+import com.parsifal.log01.utils.LogUtil;
 
 /**
  * Created by YangMing on 2016/8/24.
@@ -41,7 +41,7 @@ public class FragmentHome extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.e("tag", "FragmentHome onStart");
+        LogUtil.i("tag", "FragmentHome onStart");
     }
 
     @Override
