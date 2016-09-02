@@ -54,6 +54,12 @@ public class LogApplication extends Application {
 
     private static final String KEY_HOME = "data_home";
 
+    private static final String KEY_ALARM_STATE = "alarm_state";
+
+    private static final String STATE_ON = "ON";
+
+    private static final String STATE_OFF = "OFF";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -221,6 +227,15 @@ public class LogApplication extends Application {
 
     public boolean setAlarm() {
         LogUtil.i(TAG, "setAlarm");
+        boolean isAlarmOn = false;
+        String state = mSPUtil.load(KEY_ALARM_STATE);
+        if (STATE_ON.equals(state)) {
+            isAlarmOn = true;
+        }
+        if (!isAlarmOn) {
+            LogUtil.i(TAG, "Alarm OFF. Do nothing.");
+            return false;
+        }
 
         String json1 = mSPUtil.load(KEY_WORK);
         String json2 = mSPUtil.load(KEY_HOME);
@@ -304,8 +319,22 @@ public class LogApplication extends Application {
         return calendar;
     }
 
+    public void setAlarmOn() {
+        mSPUtil.save(KEY_ALARM_STATE, STATE_ON);
+    }
+
+    public boolean isAlarmOn() {
+        boolean isAlarmOn = false;
+        String state = mSPUtil.load(KEY_ALARM_STATE);
+        if (STATE_ON.equals(state)) {
+            isAlarmOn = true;
+        }
+        return isAlarmOn;
+    }
+
     public void cancelAlarm() {
         LogUtil.i(TAG, "cancelAlarm");
+        mSPUtil.save(KEY_ALARM_STATE, STATE_OFF);
         mAlarmUtil.cancel();
     }
 }

@@ -88,11 +88,14 @@ public class MainActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.switch_menu);
         item.setActionView(R.layout.layout_switch);
         mSwitch = (SwitchCompat) item.getActionView().findViewById(R.id.switchForActionBar);
+        boolean isAlarmOn = mApplication.isAlarmOn();
+        mSwitch.setChecked(isAlarmOn);
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Log.i(TAG, "onCheckedChanged " + isChecked);
                 if (isChecked) {
+                    mApplication.setAlarmOn();
                     mApplication.setAlarm();
                 } else {
                     mApplication.cancelAlarm();
