@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.gson.Gson;
-import com.parsifal.log01.LogPresenter;
+import com.parsifal.log01.LogApplication;
 import com.parsifal.log01.R;
 import com.parsifal.log01.ui.activity.MainActivity;
 import com.parsifal.log01.ui.view.StatisticsData;
@@ -44,7 +44,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         n.defaults = Notification.DEFAULT_SOUND;
         nm.notify(NOTIFICATION_BASE_NUMBER, n);
 
-        LogPresenter mLogPresenter = (LogPresenter) context.getApplicationContext();
+        LogApplication application = (LogApplication) context.getApplicationContext();
         String json1 = SharedPreferencesUtil.getInstance().load("data_work");
         String json2 = SharedPreferencesUtil.getInstance().load("data_home");
         StatisticsData data1 = null;
@@ -66,13 +66,13 @@ public class NotificationReceiver extends BroadcastReceiver {
             if (0 != time2) {
                 calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
                 calendar.set(Calendar.MINUTE, time2 % 60);
-                mLogPresenter.setAlarm(calendar);
+                application.setAlarm(calendar);
             } else {
                 if (0 != time1) {
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                     calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
                     calendar.set(Calendar.MINUTE, time1 % 60);
-                    mLogPresenter.setAlarm(calendar);
+                    application.setAlarm(calendar);
                 }
             }
         } else {
@@ -80,13 +80,13 @@ public class NotificationReceiver extends BroadcastReceiver {
                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                 calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
                 calendar.set(Calendar.MINUTE, time1 % 60);
-                mLogPresenter.setAlarm(calendar);
+                application.setAlarm(calendar);
             } else {
                 if (0 != time2) {
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                     calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
                     calendar.set(Calendar.MINUTE, time2 % 60);
-                    mLogPresenter.setAlarm(calendar);
+                    application.setAlarm(calendar);
                 }
             }
         }

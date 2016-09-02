@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
-import com.parsifal.log01.LogPresenter;
+import com.parsifal.log01.LogApplication;
 
 import java.util.Date;
 
@@ -19,7 +19,7 @@ public class LocateService extends Service {
 
     private static final String TAG = LocateService.class.getSimpleName();
 
-    private LogPresenter mLogPresenter = null;
+    private LogApplication mApplication = null;
 
     @Nullable
     @Override
@@ -36,11 +36,11 @@ public class LocateService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand");
-        mLogPresenter = (LogPresenter) getApplication();
-        mLogPresenter.locate(new AMapLocationListener() {
+        mApplication = (LogApplication) getApplication();
+        mApplication.locate(new AMapLocationListener() {
             @Override
             public void onLocationChanged(AMapLocation aMapLocation) {
-                mLogPresenter.saveToFile(new Date(), aMapLocation);
+                mApplication.saveToFile(new Date(), aMapLocation);
                 stopSelf();
             }
         });

@@ -8,7 +8,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.parsifal.log01.LogPresenter;
+import com.parsifal.log01.LogApplication;
 import com.parsifal.log01.R;
 import com.parsifal.log01.ui.adapter.ViewPagerAdapter;
 import com.parsifal.log01.ui.fragment.BaseFragment;
@@ -41,14 +41,14 @@ public class StatisticsActivity extends AppCompatActivity implements StatisticsV
 
     private int mCompleteCount = 0;
 
-    private LogPresenter mLogPresenter = null;
+    private LogApplication mApplication = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
-        mLogPresenter = (LogPresenter) getApplication();
-        mLogPresenter.setView(this);
+        mApplication = (LogApplication) getApplication();
+        mApplication.setView(this);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.go_to_work);
@@ -110,7 +110,7 @@ public class StatisticsActivity extends AppCompatActivity implements StatisticsV
                 public void onCreateViewComplete() {
                     mCompleteCount++;
                     if (mCompleteCount == mFragmentsCount) {
-                        mLogPresenter.loadFromSP();
+                        mApplication.loadFromSP();
                     }
                 }
             });

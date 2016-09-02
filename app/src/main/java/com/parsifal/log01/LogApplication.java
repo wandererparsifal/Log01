@@ -30,7 +30,7 @@ import java.util.Locale;
 /**
  * Created by YangMing on 2016/9/1 12:02.
  */
-public class LogApplication extends Application implements LogPresenter {
+public class LogApplication extends Application {
 
     private static final String TAG = LogApplication.class.getSimpleName();
 
@@ -65,22 +65,18 @@ public class LogApplication extends Application implements LogPresenter {
         mDateFormat = new SimpleDateFormat(PATTERN, Locale.getDefault());
     }
 
-    @Override
     public void setView(BaseView view) {
         mView = view;
     }
 
-    @Override
     public void locate(AMapLocationListener aMapLocationListener) {
         mMapUtil.locate(aMapLocationListener);
     }
 
-    @Override
     public void release() {
         mMapUtil.release();
     }
 
-    @Override
     public void saveToFile(Date date, AMapLocation aMapLocation) {
 
         String json = mFileUtil.load();
@@ -233,7 +229,6 @@ public class LogApplication extends Application implements LogPresenter {
         return data;
     }
 
-    @Override
     public void loadFromSP() {
         String json1 = mSPUtil.load(KEY_WORK);
         String json2 = mSPUtil.load(KEY_HOME);
@@ -250,7 +245,6 @@ public class LogApplication extends Application implements LogPresenter {
         }
     }
 
-    @Override
     public void setAlarm(Calendar calendar) {
         LogUtil.i(TAG, "setAlarm");
         LogUtil.i(TAG, "calendar " + new Gson().toJson(calendar, Calendar.class));
@@ -261,7 +255,6 @@ public class LogApplication extends Application implements LogPresenter {
         mAlarmUtil.setAlarm(calendar, contentIntent);
     }
 
-    @Override
     public void cancelAlarm() {
         LogUtil.i(TAG, "cancelAlarm");
         mAlarmUtil.cancel();

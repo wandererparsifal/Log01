@@ -19,7 +19,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 
 import com.google.gson.Gson;
-import com.parsifal.log01.LogPresenter;
+import com.parsifal.log01.LogApplication;
 import com.parsifal.log01.service.LocateService;
 import com.parsifal.log01.R;
 import com.parsifal.log01.ui.view.StatisticsData;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private LogPresenter mLogPresenter = null;
+    private LogApplication mApplication = null;
 
     private Toolbar mToolbar = null;
 
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLogPresenter = (LogPresenter) getApplication();
+        mApplication = (LogApplication) getApplication();
         if (23 <= Build.VERSION.SDK_INT) {
             verifyStoragePermissions(this);
         } else {
@@ -120,13 +120,13 @@ public class MainActivity extends AppCompatActivity {
                         if (0 != time2) {
                             calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
                             calendar.set(Calendar.MINUTE, time2 % 60);
-                            mLogPresenter.setAlarm(calendar);
+                            mApplication.setAlarm(calendar);
                         } else {
                             if (0 != time1) {
                                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                                 calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
                                 calendar.set(Calendar.MINUTE, time1 % 60);
-                                mLogPresenter.setAlarm(calendar);
+                                mApplication.setAlarm(calendar);
                             }
                         }
                     } else {
@@ -134,18 +134,18 @@ public class MainActivity extends AppCompatActivity {
                             calendar.add(Calendar.DAY_OF_MONTH, 1);
                             calendar.set(Calendar.HOUR_OF_DAY, time1 / 60);
                             calendar.set(Calendar.MINUTE, time1 % 60);
-                            mLogPresenter.setAlarm(calendar);
+                            mApplication.setAlarm(calendar);
                         } else {
                             if (0 != time2) {
                                 calendar.add(Calendar.DAY_OF_MONTH, 1);
                                 calendar.set(Calendar.HOUR_OF_DAY, time2 / 60);
                                 calendar.set(Calendar.MINUTE, time2 % 60);
-                                mLogPresenter.setAlarm(calendar);
+                                mApplication.setAlarm(calendar);
                             }
                         }
                     }
                 } else {
-                    mLogPresenter.cancelAlarm();
+                    mApplication.cancelAlarm();
                 }
             }
         });
