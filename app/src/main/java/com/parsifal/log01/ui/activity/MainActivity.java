@@ -21,6 +21,7 @@ import com.parsifal.log01.LogApplication;
 import com.parsifal.log01.service.LocateService;
 import com.parsifal.log01.R;
 import com.parsifal.log01.utils.LogUtil;
+import com.parsifal.log01.utils.ToastUtil;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -97,8 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 if (isChecked) {
                     mApplication.setAlarmOn();
                     mApplication.setAlarm();
+                    ToastUtil.show(MainActivity.this, R.string.alarm_on);
                 } else {
                     mApplication.cancelAlarm();
+                    ToastUtil.show(MainActivity.this, R.string.alarm_off);
                 }
             }
         });

@@ -6,4 +6,6 @@
     <string name="statistics">统计结果</string>
 
     <string name="remind">你需要打卡记录上下班时间，别忘了</string>
+    <string name="alarm_on">提醒开启！</string>
+    <string name="alarm_off">提醒关闭！</string>
 </resources>
