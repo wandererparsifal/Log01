@@ -20,25 +20,30 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        int NOTIFICATION_BASE_NUMBER = 110;
-        NotificationManager nm = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(context);
-        Intent notificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-        CharSequence remind = context.getText(R.string.remind);
-        int unicodeJoy = 0x1F612;
-        String emojiString = new String(Character.toChars(unicodeJoy));
-        builder.setContentIntent(contentIntent).
-                setSmallIcon(R.drawable.icon)
-                .setAutoCancel(true)
-                .setContentTitle(context.getText(R.string.app_name))
-                .setContentText(remind + emojiString);
-        Notification n = builder.getNotification();
-        n.defaults = Notification.DEFAULT_SOUND;
-        nm.notify(NOTIFICATION_BASE_NUMBER, n);
-
         LogApplication application = (LogApplication) context.getApplicationContext();
+
+        if (application.shouldNotice()) {
+            int NOTIFICATION_BASE_NUMBER = 110;
+            NotificationManager nm = (NotificationManager)
+                    context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification.Builder builder = new Notification.Builder(context);
+            Intent notificationIntent = new Intent(context, MainActivity.class);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+            CharSequence remind = context.getText(R.string.remind);
+            int unicodeJoy = 0x1F612;
+            String emojiString = new String(Character.toChars(unicodeJoy));
+            builder.setContentIntent(contentIntent).
+                    setSmallIcon(R.drawable.icon)
+                    .setAutoCancel(true)
+                    .setContentTitle(context.getText(R.string.app_name))
+                    .setContentText(remind + emojiString);
+            Notification n = builder.getNotification();
+            n.defaults = Notification.DEFAULT_SOUND;
+            nm.notify(NOTIFICATION_BASE_NUMBER, n);
+        } else {
+            application.clearUpdateTime();
+        }
+
         application.setAlarm();
     }
 }

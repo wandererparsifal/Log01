@@ -56,6 +56,8 @@ public class LogApplication extends Application {
 
     private static final String KEY_ALARM_STATE = "alarm_state";
 
+    private static final String KEY_UPDATE_TIME = "update_time";
+
     private static final String STATE_ON = "ON";
 
     private static final String STATE_OFF = "OFF";
@@ -172,7 +174,7 @@ public class LogApplication extends Application {
         if (null != data2) {
             mSPUtil.save(KEY_HOME, mJsonUtil.toJson(data2, StatisticsData.class));
         }
-
+        setUpdateTime();
         setAlarm();
     }
 
@@ -223,6 +225,33 @@ public class LogApplication extends Application {
         if (mView instanceof StatisticsView) {
             ((StatisticsView) mView).drawGraphics(data1, data2);
         }
+    }
+
+    public void setUpdateTime() {
+        mSPUtil.save(KEY_UPDATE_TIME, mJsonUtil.toJson(Calendar.getInstance(), Calendar.class));
+    }
+
+    public void clearUpdateTime() {
+        mSPUtil.save(KEY_UPDATE_TIME, null);
+    }
+
+    public boolean shouldNotice() {
+        String json = mSPUtil.load(KEY_UPDATE_TIME);
+        if (null != json) {
+            Calendar calendarUpdate = mJsonUtil.fromJson(json, Calendar.class);
+            Calendar calendarNow = Calendar.getInstance();
+            if (calendarUpdate.get(Calendar.YEAR) == calendarNow.get(Calendar.YEAR)
+                    && calendarUpdate.get(Calendar.MONTH) == calendarNow.get(Calendar.MONTH)
+                    && calendarUpdate.get(Calendar.DAY_OF_MONTH) == calendarNow
+                    .get(Calendar.DAY_OF_MONTH)) {
+                int hourUpdate = calendarUpdate.get(Calendar.HOUR_OF_DAY);
+                int hourNow = calendarUpdate.get(Calendar.HOUR_OF_DAY);
+                if ((12 > hourUpdate && 12 > hourNow) || (12 <= hourUpdate && 12 <= hourNow)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public boolean setAlarm() {
